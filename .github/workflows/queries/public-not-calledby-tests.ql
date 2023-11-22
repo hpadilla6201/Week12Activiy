@@ -8,9 +8,13 @@
 import javascript
 
 // Predicate to identify test files (assumes file naming convention for Jest tests)
-predicate isTestFile(File f) {
-  f.getBaseName().matches("%test.ts") or
-  f.getBaseName().matches("%spec.ts")
+predicate isTest(Function test) {
+  exists(CallExpr describe, CallExpr it |
+    describe.getCalleeName() = "describe" and
+    it.getCalleeName() = "it" and
+    it.getParent*() = describe and
+    test = it.getArgument(1)
+  )
 }
 
 // Predicate to identify public methods in TypeScript
